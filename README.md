@@ -49,7 +49,8 @@ Iteration is driven by Claude Code's **built-in `/loop`** (self-paced) and, opti
 ## Install
 
 ```bash
-claude plugin marketplace add akihidem/loop-kit
+# the akihidem marketplace is hosted in the claude-env-coach repo
+claude plugin marketplace add akihidem/claude-env-coach
 claude plugin install loop-kit@akihidem
 ```
 
