@@ -1,0 +1,25 @@
+{
+  "$schema": "https://code.claude.com/schemas/plugin.json",
+  "name": "loop-kit",
+  "displayName": "Loop Kit",
+  "version": "0.1.0",
+  "description": "Self-verifying build loop for Claude Code. Freeze YES/NO criteria, then implement -> L0 deterministic gate (test/lint/typecheck) -> adversarial validator (builder != checker) -> bounded iterate. Grounds the loop in external verification instead of lenient self-grading.",
+  "author": {
+    "name": "akihidem",
+    "url": "https://github.com/akihidem"
+  },
+  "homepage": "https://github.com/akihidem/loop-kit",
+  "repository": "https://github.com/akihidem/loop-kit",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "claude",
+    "anthropic",
+    "loop",
+    "self-verification",
+    "quality-gate",
+    "tdd",
+    "validator",
+    "prompt-engineering"
+  ]
+}
