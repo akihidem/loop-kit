@@ -4,6 +4,8 @@
 
 [English](README.md) · [日本語](README.ja.md)
 
+> 📖 **New here?** There's an [illustrated, plain-language explainer (Japanese)](docs/explainer-ja/) — see the [preview image](docs/explainer-ja/preview.png).
+
 A **self-verifying build loop** for Claude Code. Freeze YES/NO acceptance criteria, then on each
 iteration: **implement → L0 deterministic gate (test/lint/typecheck) → adversarial validator
 (builder ≠ checker) → fix → repeat (bounded)**. The point isn't multi-agent magic — it's

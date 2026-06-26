@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>loop-kit ってなに？ — やさしい解説</title>
+<style>
+  :root{
+    --bg:#0f172a; --card:#ffffff; --ink:#1e293b; --muted:#64748b;
+    --blue:#3b82f6; --blue-bg:#dbeafe; --green:#22c55e; --green-bg:#dcfce7;
+    --red:#ef4444; --red-bg:#fee2e2; --amber:#f59e0b; --amber-bg:#fef3c7;
+    --line:#e2e8f0;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:radial-gradient(1200px 600px at 50% -10%, #1e293b 0%, var(--bg) 55%);
+    font-family:'Hiragino Sans','Noto Sans JP','Yu Gothic',system-ui,sans-serif;
+    color:var(--ink); line-height:1.85; padding:36px 16px 56px;
+  }
+  .lk-wrap{max-width:900px; margin:0 auto;}
+
+  /* ヘッダ */
+  .lk-head{text-align:center; color:#fff; margin-bottom:30px;}
+  .lk-head .lk-badge{display:inline-block; font-size:13px; letter-spacing:.08em;
+    background:rgba(59,130,246,.18); border:1px solid rgba(96,165,250,.5);
+    color:#bfdbfe; padding:5px 14px; border-radius:999px; margin-bottom:16px;}
+  .lk-head h1{font-size:34px; line-height:1.4; margin:0 0 10px; font-weight:800;}
+  .lk-head h1 .lk-accent{color:#60a5fa;}
+  .lk-head p{margin:0; color:#cbd5e1; font-size:16px;}
+  .lk-head .lk-date{margin-top:10px; font-size:13px; color:#94a3b8;}
+
+  /* カード */
+  .lk-card{background:var(--card); border-radius:18px; padding:26px 30px;
+    margin:20px 0; box-shadow:0 10px 30px rgba(2,6,23,.35); border:1px solid rgba(255,255,255,.04);}
+  .lk-card.is-accent-blue{border-left:6px solid var(--blue);}
+  .lk-card.is-accent-red{border-left:6px solid var(--red);}
+  .lk-card.is-accent-green{border-left:6px solid var(--green);}
+  .lk-card.is-accent-amber{border-left:6px solid var(--amber);}
+  .lk-h{display:flex; align-items:center; gap:10px; font-size:22px; font-weight:800;
+    margin:0 0 12px; color:var(--ink);}
+  .lk-h .lk-emoji{font-size:26px; line-height:1;}
+  .lk-card p{margin:10px 0; font-size:16.5px;}
+  .lk-card p.lk-lead{font-size:18px;}
+  .lk-card strong{color:#0f172a; background:linear-gradient(transparent 62%, #fde68a 62%); padding:0 2px;}
+  .lk-muted{color:var(--muted); font-size:14.5px;}
+
+  /* 図 */
+  figure.lk-fig{margin:14px 0 4px; padding:8px; background:#f8fafc; border-radius:14px; border:1px solid var(--line);}
+  figure.lk-fig img{width:100%; height:auto; display:block;}
+  figure.lk-fig figcaption{text-align:center; color:var(--muted); font-size:13.5px; margin-top:6px;}
+
+  /* 番号付きステップ */
+  .lk-steps{list-style:none; margin:14px 0 0; padding:0;}
+  .lk-steps li{display:flex; gap:14px; padding:12px 0; border-top:1px dashed var(--line);}
+  .lk-steps li:first-child{border-top:none;}
+  .lk-steps .lk-num{flex:0 0 34px; height:34px; border-radius:50%; background:var(--blue-bg);
+    color:var(--blue); font-weight:800; display:flex; align-items:center; justify-content:center; font-size:16px;}
+  .lk-steps .lk-st b{font-size:16.5px;}
+  .lk-steps .lk-st span{display:block; color:var(--muted); font-size:14.5px;}
+
+  /* コンポーネント表 */
+  table.lk-tbl{width:100%; border-collapse:collapse; margin-top:12px; font-size:15.5px;}
+  table.lk-tbl th, table.lk-tbl td{text-align:left; padding:11px 12px; border-bottom:1px solid var(--line); vertical-align:top;}
+  table.lk-tbl th{color:var(--muted); font-size:13px; font-weight:700; background:#f8fafc;}
+  table.lk-tbl td code{background:#f1f5f9; padding:2px 7px; border-radius:6px; font-size:14px; color:#0f172a;}
+
+  /* 用語カード */
+  .lk-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(225px,1fr)); gap:12px; margin-top:14px;}
+  .lk-term{background:#f8fafc; border:1px solid var(--line); border-radius:12px; padding:13px 15px;}
+  .lk-term .lk-word{font-weight:800; font-size:15.5px; color:#0f172a; margin-bottom:3px;}
+  .lk-term .lk-def{font-size:14px; color:var(--muted); line-height:1.7;}
+
+  /* 限界リスト */
+  .lk-limits{margin:10px 0 0; padding:0; list-style:none;}
+  .lk-limits li{position:relative; padding:9px 0 9px 30px; border-top:1px solid var(--line); font-size:15.5px;}
+  .lk-limits li:first-child{border-top:none;}
+  .lk-limits li::before{content:"⚠️"; position:absolute; left:0; top:9px; font-size:15px;}
+
+  .lk-foot{text-align:center; color:#94a3b8; font-size:13px; margin-top:26px; line-height:1.9;}
+  .lk-foot code{background:rgba(148,163,184,.15); padding:2px 7px; border-radius:6px; color:#cbd5e1;}
+</style>
+</head>
+<body>
+<div class="lk-wrap">
+
+  <!-- ===== ヘッダ ===== -->
+  <header class="lk-head">
+    <span class="lk-badge">AI ものづくり道具のしくみ</span>
+    <h1><span class="lk-accent">loop-kit</span> ってなに？<br>AI に「ちゃんと完成させる」しくみ</h1>
+    <p>プログラミングを知らなくても分かる、やさしい解説</p>
+    <div class="lk-date">2026-06-26 ／ 図はすべて自動生成（codex 作）</div>
+  </header>
+
+  <!-- ===== 一言で ===== -->
+  <section class="lk-card is-accent-blue">
+    <h2 class="lk-h"><span class="lk-emoji">📌</span>ひとことで言うと</h2>
+    <p class="lk-lead">AI にものづくり（おもにプログラム作り）を任せると、AI はつい「できたつもり」で
+      <strong>甘い合格</strong>を出しがちです。loop-kit は、その出来上がりを
+      <strong>機械の関門</strong>と<strong>別の AI による検品</strong>に通し、
+      ダメなら直してやり直させる——という「段取り」を部品にしたものです。</p>
+    <p class="lk-muted">AI プログラミング道具「Claude Code（クロード・コード）」に後付けする拡張機能（プラグイン）として配られています。
+      むずかしい AI の魔法ではなく、<strong>合否を機械にきちんと判定させる</strong>のが肝心、という考え方の道具です。</p>
+  </section>
+
+  <!-- ===== なぜ必要 ===== -->
+  <section class="lk-card is-accent-red">
+    <h2 class="lk-h"><span class="lk-emoji">🤔</span>なぜ必要なの？</h2>
+    <p>AI に「これで完成？」と訊くと、たいてい<strong>甘く OK を出します</strong>。
+      通したい一心で、自分で合格ラインをこっそり下げてしまうのです。
+      まるで、生徒が自分の答案を自分で採点して、ぜんぶ「◎」にしてしまうようなもの。</p>
+    <figure class="lk-fig">
+      <img src="img/why.svg" alt="AI に『できた？』と訊くと甘く自己採点する。だから機械が客観的に合否を出す関門（L0＝砦）を置く、という対比図">
+      <figcaption>「自分で自分に◎」をやめ、機械が客観的に合否を出す関門を置く</figcaption>
+    </figure>
+    <p>だから loop-kit は、<strong>人の気分やお世辞が入り込まない「機械の関門」</strong>を必ず通します。
+      たとえばプログラムなら、自動テスト（決めた動きを満たすか自動でチェック）や文法チェックです。
+      この関門を loop-kit では <strong>L0（エルゼロ）＝砦（とりで）</strong> と呼びます。</p>
+  </section>
+
+  <!-- ===== どう動く ===== -->
+  <section class="lk-card is-accent-blue">
+    <h2 class="lk-h"><span class="lk-emoji">🔁</span>どう動くの？（くり返しで仕上げる）</h2>
+    <p>loop-kit は、下の流れを<strong>合格するまで（または上限に達するまで）くり返し</strong>ます。</p>
+    <figure class="lk-fig">
+      <img src="img/flow.svg" alt="① つくる → ② 機械の関門 → ③ 別の AI が粗探し、の流れ図。落ちたら作り直し、欠陥はその点だけ直して反復、両方 OK で完成、3 回で打ち切り">
+      <figcaption>つくる → 機械の関門 → 別の AI が検品 → 直す → くり返す</figcaption>
+    </figure>
+    <ol class="lk-steps">
+      <li><span class="lk-num">1</span><span class="lk-st"><b>つくる</b><span>AI が実際に作る（プログラムを書く、など）。</span></span></li>
+      <li><span class="lk-num">2</span><span class="lk-st"><b>機械の関門でふるい分け</b><span>自動テスト・文法チェックで合否を機械判定。落ちたら①へ戻して作り直し。</span></span></li>
+      <li><span class="lk-num">3</span><span class="lk-st"><b>別の AI が粗探し</b><span>つくった本人とは別の AI が、欠陥はないか敵対的にチェック。見つかったら、その点だけ直してまた回す。</span></span></li>
+      <li><span class="lk-num">✓</span><span class="lk-st"><b>両方 OK で完成</b><span>機械の関門と検品の両方を通って、はじめて「完成」として出す。</span></span></li>
+    </ol>
+    <p class="lk-muted">大事な歯止め: 何回やっても直らないときは、<strong>3 回くらいで打ち切り</strong>、
+      「ここが未解決」と<strong>正直に</strong>出します。無理やり「合格」に見せかけません。
+      （くり返しは Claude Code 本体の機能が動かします。loop-kit はその「段取り」を渡す役です。）</p>
+  </section>
+
+  <!-- ===== キモ ===== -->
+  <section class="lk-card is-accent-green">
+    <h2 class="lk-h"><span class="lk-emoji">👥</span>いちばんのキモ：作る人と検品する人を分ける</h2>
+    <p>同じ AI が「作って・自分で検品」すると、自分の見落としには気づけません。
+      そこで loop-kit は <strong>つくる AI</strong> と <strong>粗探しする AI（別の役）</strong> を分けます。
+      これを <strong>「つくる人 ≠ 検品する人」</strong> といいます。</p>
+    <figure class="lk-fig">
+      <img src="img/builder-checker.svg" alt="つくる AI が成果物を渡し、別の役の検品する AI が粗探しをする図。ただし両者は同じ系統の AI なので完全に独立ではない、という注意つき">
+      <figcaption>つくる AI が渡し、別の役の AI が粗探しする</figcaption>
+    </figure>
+    <p>もうひとつのコツは、<strong>合格基準を先に決めて「凍結」する</strong>こと。
+      作り始める前に「これを満たせば合格」を決めておき、<strong>後から甘くしない</strong>のです。
+      ゴールを動かせなくしておくのが、ごまかしを防ぐ要になります。</p>
+  </section>
+
+  <!-- ===== 何が入っている ===== -->
+  <section class="lk-card is-accent-blue">
+    <h2 class="lk-h"><span class="lk-emoji">🧩</span>中身は何でできている？</h2>
+    <p>loop-kit には、次の 4 つの部品が入っています。</p>
+    <table class="lk-tbl">
+      <thead><tr><th>部品（名前）</th><th>役わり（やさしく言うと）</th></tr></thead>
+      <tbody>
+        <tr><td><code>loopify</code></td><td>あなたの「ふつうの依頼文」を、<strong>合格基準つきの段取り</strong>に書き直してくれる係。</td></tr>
+        <tr><td><code>loop-protocol</code></td><td>「つくる → 機械の関門 → 検品 → 判定」の<strong>手順書</strong>。必要なときに自動で出てくる。</td></tr>
+        <tr><td><code>validator</code></td><td>粗探し専門の <strong>検品 AI</strong>。仕事は「褒めること」ではなく「欠陥を見つけること」。</td></tr>
+        <tr><td><code>goal-loop-template</code></td><td>「完成まで作り切る」ときに、感覚ではなく<strong>動かぬ証拠</strong>で縛るためのひな形。</td></tr>
+      </tbody>
+    </table>
+    <p class="lk-muted">入れ方は、Claude Code で
+      <code>claude plugin marketplace add akihidem/claude-env-coach</code> →
+      <code>claude plugin install loop-kit@akihidem</code> の 2 行。
+      くり返しを動かす本体機能（<code>/loop</code>、必要に応じて <code>/goal</code>）は Claude Code に最初から付いており、loop-kit には同梱しません。</p>
+  </section>
+
+  <!-- ===== 用語 ===== -->
+  <section class="lk-card is-accent-amber">
+    <h2 class="lk-h"><span class="lk-emoji">📖</span>使った言葉の意味</h2>
+    <div class="lk-grid">
+      <div class="lk-term"><div class="lk-word">AI</div><div class="lk-def">文章やプログラムを自動で作る賢いソフト。ここでは「Claude（クロード）」という AI を使う。</div></div>
+      <div class="lk-term"><div class="lk-word">Claude Code</div><div class="lk-def">Claude を使ってプログラム作りを手伝う道具。loop-kit はこれに後付けする。</div></div>
+      <div class="lk-term"><div class="lk-word">プラグイン</div><div class="lk-def">道具に後から付け足す拡張パーツ。スマホのアプリ追加のようなもの。</div></div>
+      <div class="lk-term"><div class="lk-word">テスト（自動チェック）</div><div class="lk-def">「決めた通りに動くか」を機械が自動で確かめる仕組み。人の主観が入らない。</div></div>
+      <div class="lk-term"><div class="lk-word">L0（エルゼロ）＝砦</div><div class="lk-def">いちばん頼れる「機械の関門」。ここを通らなければ先に進めない、ごまかせない最終ライン。</div></div>
+      <div class="lk-term"><div class="lk-word">validator（検品 AI）</div><div class="lk-def">出来上がりの粗探しをする別の AI。承認役ではなく、あら探し役。</div></div>
+      <div class="lk-term"><div class="lk-word">お手盛り採点</div><div class="lk-def">自分に都合よく甘く採点してしまうこと。AI が「できたつもり」になる現象（専門的には Goodhart）。</div></div>
+      <div class="lk-term"><div class="lk-word">反復（くり返し）</div><div class="lk-def">直しては確かめ、を何度かくり返すこと。loop-kit では上限 3 回ほどで打ち切る。</div></div>
+    </div>
+  </section>
+
+  <!-- ===== 限界 ===== -->
+  <section class="lk-card is-accent-red">
+    <h2 class="lk-h"><span class="lk-emoji">⚠️</span>正直な「できないこと」</h2>
+    <p>便利な反面、過信は禁物です。作者自身が次の限界をはっきり書いています。</p>
+    <ul class="lk-limits">
+      <li><strong>完全に独立した検証ではない。</strong>つくる AI も検品 AI も同じ系統なので、根っこから同じ勘違いをすると、両方そろって見逃すことがあります。検品は見落としを<em>減らす</em>けれど、ゼロにはしません。</li>
+      <li><strong>本当の砦は「機械の関門（L0）」。</strong>検品 AI はあくまで二番手。だから、なるべく<strong>機械で合否を出せる形</strong>に持っていくのが肝心です。</li>
+      <li><strong>調べ物の「事実の正しさ」までは保証できない。</strong>その場合は、出典をたどることと、最後に人が確かめることが砦になります。</li>
+      <li><strong>何にでも使う道具ではない。</strong>「1 行直す」「ちょっと調べる」程度には大げさで、むしろ無駄が増えます。</li>
+    </ul>
+  </section>
+
+  <footer class="lk-foot">
+    loop-kit — Claude Code 用の自己検証ビルドループ ／ MIT © akihidem<br>
+    <code>github.com/akihidem/loop-kit</code> ／ 図は codex が自動生成 ／ 2026-06-26
+  </footer>
+
+</div>
+</body>
+</html>

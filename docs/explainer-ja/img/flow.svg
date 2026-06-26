@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 480">
+  <defs>
+    <marker id="arrow-blue" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#3b82f6"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#ef4444"/>
+    </marker>
+    <marker id="arrow-green" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#22c55e"/>
+    </marker>
+    <marker id="arrow-amber" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#f59e0b"/>
+    </marker>
+    <style>
+      text { font-family: 'Hiragino Sans','Noto Sans JP','Yu Gothic',system-ui,sans-serif; fill: #1e293b; }
+      .small { font-size: 15px; fill: #64748b; }
+      .label { font-size: 14px; font-weight: 700; }
+      .title { font-size: 23px; font-weight: 700; }
+      .icon { font-size: 36px; }
+      .thin { stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+    </style>
+  </defs>
+
+  <rect x="10" y="10" width="1020" height="460" rx="18" fill="#f8fafc"/>
+
+  <g transform="translate(52 86)">
+    <rect x="0" y="0" width="188" height="132" rx="12" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+    <text x="94" y="43" text-anchor="middle" class="icon">🔨</text>
+    <text x="94" y="78" text-anchor="middle" class="title">① つくる</text>
+    <text x="94" y="106" text-anchor="middle" class="small">(AI が実装)</text>
+  </g>
+
+  <g transform="translate(330 86)">
+    <rect x="0" y="0" width="220" height="132" rx="12" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+    <text x="110" y="39" text-anchor="middle" class="icon">🚦</text>
+    <text x="110" y="73" text-anchor="middle" class="title">② 機械の関門</text>
+    <text x="110" y="101" text-anchor="middle" class="small">テスト・文法チェック</text>
+    <text x="110" y="121" text-anchor="middle" class="small">ごまかせない自動判定</text>
+  </g>
+
+  <g transform="translate(638 86)">
+    <rect x="0" y="0" width="242" height="132" rx="12" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+    <text x="121" y="39" text-anchor="middle" class="icon">🔎</text>
+    <text x="121" y="73" text-anchor="middle" class="title" style="font-size:19px">③ 別の AI が粗探し</text>
+    <text x="121" y="102" text-anchor="middle" class="small">検品役</text>
+    <text x="121" y="122" text-anchor="middle" class="small">つくった本人とは別</text>
+  </g>
+
+  <path d="M 240 152 H 320" class="thin" stroke="#3b82f6" marker-end="url(#arrow-blue)"/>
+  <path d="M 550 152 H 628" class="thin" stroke="#3b82f6" marker-end="url(#arrow-blue)"/>
+
+  <g>
+    <path d="M 440 218 V 292 Q 440 324 408 324 H 156 Q 124 324 124 292 V 229" class="thin" stroke="#ef4444" marker-end="url(#arrow-red)"/>
+    <rect x="250" y="277" width="172" height="30" rx="15" fill="#fee2e2"/>
+    <text x="336" y="298" text-anchor="middle" class="label" fill="#1e293b">落ちたら作り直し</text>
+    <rect x="368" y="230" width="74" height="26" rx="13" fill="#fee2e2"/>
+    <text x="405" y="249" text-anchor="middle" class="label">不合格</text>
+  </g>
+
+  <g>
+    <path d="M 742 218 V 360 Q 742 394 708 394 H 148 Q 114 394 114 360 V 229" class="thin" stroke="#ef4444" marker-end="url(#arrow-red)"/>
+    <rect x="430" y="346" width="198" height="30" rx="15" fill="#fee2e2"/>
+    <text x="529" y="367" text-anchor="middle" class="label">その点だけ直して反復</text>
+    <rect x="686" y="230" width="82" height="26" rx="13" fill="#fee2e2"/>
+    <text x="727" y="249" text-anchor="middle" class="label">欠陥あり</text>
+  </g>
+
+  <g>
+    <path d="M 880 152 H 897" class="thin" stroke="#22c55e" marker-end="url(#arrow-green)"/>
+    <rect x="908" y="72" width="108" height="30" rx="15" fill="#dcfce7"/>
+    <text x="962" y="93" text-anchor="middle" class="label">両方 OK</text>
+    <rect x="900" y="119" width="122" height="66" rx="12" fill="#dcfce7" stroke="#22c55e" stroke-width="2"/>
+    <text x="961" y="146" text-anchor="middle" class="title" style="font-size:20px">✅ 完成</text>
+    <text x="961" y="170" text-anchor="middle" class="small">出力</text>
+  </g>
+
+  <g>
+    <path d="M 550 210 Q 650 260 753 304" class="thin" stroke="#f59e0b" marker-end="url(#arrow-amber)"/>
+    <rect x="760" y="282" width="250" height="76" rx="12" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+    <text x="885" y="308" text-anchor="middle" class="label">🚩 3 回でも直らなければ</text>
+    <text x="885" y="331" text-anchor="middle" class="label">「未解決」と正直に出す</text>
+    <text x="885" y="350" text-anchor="middle" class="small">合格を偽装しない</text>
+  </g>
+
+  <g transform="translate(92 437)">
+    <circle cx="0" cy="0" r="7" fill="#22c55e"/>
+    <text x="14" y="5" class="small">緑=合格</text>
+    <circle cx="112" cy="0" r="7" fill="#ef4444"/>
+    <text x="126" y="5" class="small">赤=やり直し</text>
+    <circle cx="260" cy="0" r="7" fill="#f59e0b"/>
+    <text x="274" y="5" class="small">琥珀=打ち切り</text>
+  </g>
+</svg>

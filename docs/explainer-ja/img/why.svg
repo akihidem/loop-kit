@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 380">
+  <defs>
+    <marker id="arrow-blue" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#3b82f6"/>
+    </marker>
+    <style>
+      text { font-family: 'Hiragino Sans','Noto Sans JP','Yu Gothic',system-ui,sans-serif; fill: #1e293b; }
+      .title { font-size: 22px; font-weight: 700; }
+      .body { font-size: 17px; }
+      .small { font-size: 15px; fill: #64748b; }
+      .label { font-size: 14px; font-weight: 700; }
+      .icon { font-size: 34px; }
+      .line { stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+    </style>
+  </defs>
+
+  <rect x="10" y="10" width="900" height="360" rx="18" fill="#f8fafc"/>
+
+  <g transform="translate(38 42)">
+    <rect x="0" y="0" width="360" height="276" rx="12" fill="#fee2e2" stroke="#ef4444" stroke-width="2"/>
+    <text x="180" y="38" text-anchor="middle" class="title">AI に「できた？」と訊くと…</text>
+    <text x="52" y="118" text-anchor="middle" class="icon">🤖</text>
+    <circle cx="52" cy="126" r="35" fill="none" stroke="#ef4444" stroke-width="2"/>
+
+    <path d="M 98 81 H 263 Q 283 81 283 101 V 141 Q 283 161 263 161 H 124 L 94 184 L 105 157 Q 86 152 86 134 V 101 Q 86 81 98 81 Z" fill="#ffffff" stroke="#ef4444" stroke-width="2"/>
+    <text x="185" y="119" text-anchor="middle" class="body">うん、完璧！◎</text>
+
+    <rect x="212" y="174" width="96" height="68" rx="8" fill="#ffffff" stroke="#ef4444" stroke-width="2"/>
+    <line x1="232" y1="193" x2="288" y2="193" stroke="#64748b" stroke-width="2" stroke-linecap="round"/>
+    <line x1="232" y1="211" x2="278" y2="211" stroke="#64748b" stroke-width="2" stroke-linecap="round"/>
+    <text x="260" y="230" text-anchor="middle" font-size="40" font-weight="700" fill="#ef4444">◎</text>
+
+    <text x="180" y="252" text-anchor="middle" class="small">通したいので基準を甘くしてしまう</text>
+    <text x="180" y="272" text-anchor="middle" class="small">（お手盛り採点）</text>
+  </g>
+
+  <g transform="translate(424 132)">
+    <path d="M 0 58 H 70" class="line" stroke="#3b82f6" marker-end="url(#arrow-blue)"/>
+    <text x="35" y="36" text-anchor="middle" class="title">だから</text>
+  </g>
+
+  <g transform="translate(522 42)">
+    <rect x="0" y="0" width="360" height="276" rx="12" fill="#dcfce7" stroke="#22c55e" stroke-width="2"/>
+    <text x="180" y="38" text-anchor="middle" class="title">機械の関門を置く</text>
+
+    <rect x="94" y="76" width="172" height="122" rx="12" fill="#ffffff" stroke="#22c55e" stroke-width="2"/>
+    <text x="180" y="111" text-anchor="middle" class="icon">🚦</text>
+    <rect x="126" y="128" width="108" height="34" rx="6" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+    <text x="180" y="151" text-anchor="middle" class="label">自動判定機</text>
+    <path d="M 126 185 H 234" stroke="#22c55e" stroke-width="9" stroke-linecap="round"/>
+    <text x="180" y="192" text-anchor="middle" class="label" fill="#1e293b">合格</text>
+
+    <g transform="translate(244 154) rotate(-10)">
+      <rect x="0" y="0" width="82" height="38" rx="6" fill="#fee2e2" stroke="#ef4444" stroke-width="2"/>
+      <text x="41" y="25" text-anchor="middle" class="label">不合格</text>
+    </g>
+
+    <text x="180" y="234" text-anchor="middle" class="small">人の気分やお世辞が入らない</text>
+    <text x="180" y="254" text-anchor="middle" class="small">＝ごまかせない（これが L0＝砦）</text>
+  </g>
+</svg>

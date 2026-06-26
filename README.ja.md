@@ -4,6 +4,8 @@
 
 [English](README.md) · [日本語](README.ja.md)
 
+> 📖 **はじめての方へ** — 図解でやさしく説明した [非技術者向け解説](docs/explainer-ja/)（[プレビュー画像](docs/explainer-ja/preview.png)）を用意しました。
+
 Claude Code 用の **自己検証ビルドループ**。YES/NO で判定できる合格基準を凍結し、各反復で
 **実装 → L0 決定的ゲート（test/lint/typecheck）→ 敵対的 validator（builder ≠ checker）→ 修正 →
 反復（有界）**。価値はマルチエージェントの魔法ではなく、**ループを外部検証に接地すること** ——
