@@ -48,6 +48,23 @@ lenient self-grade.
 Iteration is driven by Claude Code's **built-in `/loop`** (self-paced) and, optionally, **`/goal`**
 (run-to-completion). loop-kit does **not** ship those — it ships the *recipe* they run.
 
+## Independent (cross-vendor) checker — the stronger form
+
+The bundled `validator` is **same-family** (Claude checking Claude), so a defect Claude
+*systematically* makes slips past both writer and checker. The stronger form hands grading to a
+**different model lineage**: [loop-verify](https://github.com/akihidem/loop-verify) (codex / GPT /
+Gemini). Its verdict is the **same contract** as `validator`, so `loop-protocol` uses it as a
+**drop-in** checker when it's available and falls back to the haiku validator otherwise.
+
+- **Default (zero-config):** haiku `validator` — no external accounts, works the moment loop-kit is
+  installed.
+- **Opt-in upgrade:** run loop-verify (needs a codex / OpenAI / Gemini backend). Measured 4 vs 1
+  independent defects over the same-family check — see loop-verify's edge bench.
+
+This keeps loop-kit dependency-free by default while letting the loop reach cross-lineage
+independence when you wire loop-verify in (run it as an MCP server so `independent_verify` is in the
+session). A different lineage reduces shared blind spots; it doesn't make the check infallible.
+
 ## Install
 
 ```bash
@@ -62,8 +79,9 @@ claude plugin install loop-kit@akihidem
   recipe). Hand it to `/loop`, or let Claude run it inline.
 - The **`loop-protocol`** skill auto-surfaces on YES/NO-decidable deliverable tasks and runs the
   implement → L0 → validator → judge cycle.
-- The **`validator`** agent (haiku) does the adversarial inspection against the frozen criteria
-  (read from `~/.claude/tmp/criteria.md`).
+- The **checker** does the adversarial inspection against the frozen criteria (read from
+  `~/.claude/tmp/criteria.md`): **loop-verify** (cross-vendor) if available, else the bundled
+  **`validator`** agent (haiku).
 - **`templates/goal-loop-template.md`** — for "build it to completion" jobs, anchor `/goal` to
   deterministic evidence (not a soft self-grade).
 
@@ -78,14 +96,17 @@ skill already triggers without it; the snippet just makes the proposal automatic
 |---|---|---|
 | `loopify` | command | Convert a free-form request into a loop-ready prompt |
 | `loop-protocol` | skill | The implement → L0 → validator → judge procedure |
-| `validator` | agent (haiku) | Adversarial inspection against frozen criteria |
+| `validator` | agent (haiku) | Adversarial inspection against frozen criteria (same-family default) |
 | `goal-loop-template` | template | Anchor `/goal` to deterministic evidence |
+| `loop-verify` | external, optional | Cross-vendor independent checker — drop-in for `validator` ([separate repo](https://github.com/akihidem/loop-verify)) |
 
 ## Honest limits
 
-- **Not independent verification.** Generation and inspection are the same Claude family, so a
-  defect Claude *systematically* makes is missed by both. The validator reduces blind spots; it
-  doesn't eliminate them.
+- **Not independent by default.** The bundled validator is the same Claude family, so a defect
+  Claude *systematically* makes is missed by both. For cross-lineage independence, wire in
+  **loop-verify** (cross-vendor) as the checker — see
+  [above](#independent-cross-vendor-checker--the-stronger-form). Either way it reduces blind spots;
+  it doesn't eliminate them.
 - **L0 is the real guardrail.** For code, the deterministic test/lint/typecheck is the fort; the
   validator is a second pass. If there's no L0, the loop is much weaker — add one (extract logic
   into a pure function and test it).

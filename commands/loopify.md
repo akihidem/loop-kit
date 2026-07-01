@@ -33,8 +33,9 @@ Output (concise, just this):
     1. <YES/NO-decidable criterion>
     2. <YES/NO-decidable criterion>
     3. <YES/NO-decidable criterion>
-  Each iteration: implement -> L0(<concrete command>) -> validator review (pass only the
-    criteria) -> fix only the flagged defects.
+  Each iteration: implement -> L0(<concrete command>) -> checker review (loop-verify if its
+    `independent_verify` tool is available, else the validator; pass only the criteria) -> fix
+    only the flagged defects.
   Stop on PASS or after 3 iterations. Re-run all tests every iteration (no regressions).
   ```
 - 🧪 L0 command: <the concrete command that actually produces that criterion>

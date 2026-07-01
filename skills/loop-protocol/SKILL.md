@@ -14,10 +14,14 @@ description: |
 
 <!--
 Premises and limits (do not delete):
-- A context-isolated self-grading loop. NOT fully independent verification. Generation and
-  inspection are the same Claude family, so a defect Claude systematically makes is missed by both.
-- The only external guardrail is the L0 deterministic check (test/lint/typecheck). For code this
-  is the fort. The Claude inspection (validator) is a second pass.
+- The checker is either the same-family `validator` (default, zero external accounts) or, when
+  loop-verify is available, a different model lineage (codex/GPT/Gemini). With the same-family
+  validator this is NOT fully independent verification: a defect Claude systematically makes is
+  missed by both generation and inspection. loop-verify (cross-vendor) narrows that gap — a
+  different lineage reduces shared blind spots, but model inspection never eliminates error.
+- The only guardrail that never depends on a model is the L0 deterministic check
+  (test/lint/typecheck). For code that is the fort. Any checker (validator or loop-verify) is a
+  second pass on top of L0.
 - For fact-checking, do NOT make Claude self-inspection the fort of correctness. The fort is
   source grounding (web search) plus human approval.
 - Iteration is driven by the built-in self-paced loop. This file defines the contents of each iteration.
@@ -68,13 +72,25 @@ Build the deliverable per the acceptance criteria / fix only the defects flagged
 2. After L0 passes, freeze the inspection inputs:
    - acceptance criteria -> `~/.claude/tmp/criteria.md` (the proposal text verbatim)
    - text deliverable -> `~/.claude/tmp/artifact.md` (code deliverables: the changes under git as-is)
-3. Call the `validator` subagent. **Pass paths only** (don't paste the deliverable/criteria into
-   the body): "Read `~/.claude/tmp/criteria.md`, read the target (`git diff` or
-   `~/.claude/tmp/artifact.md`) yourself, and inspect it."
+3. **Pick the checker (prefer cross-vendor).** The job is adversarial inspection against the frozen
+   criteria; **builder != checker** is what makes it worth running.
+   - **If loop-verify is available** (its MCP tool `independent_verify` is in the session): use it
+     as the checker. It grades with a
+     **different model lineage** (codex / GPT / Gemini), so it catches defects a same-family
+     self-check waves through — measured 4 vs 1 independent defects vs the haiku validator. Its
+     verdict is the **same contract** as the `validator` below (PASS/FAIL, per-criterion OK/NG,
+     defects-outside, fix_instructions), so it's a **drop-in replacement**. Call it as
+     `independent_verify(criteria, artifact)` — pass the frozen criteria text (from
+     `~/.claude/tmp/criteria.md`) and the artifact (the `git diff` or `~/.claude/tmp/artifact.md`)
+     as the arguments.
+   - **Otherwise fall back to the `validator` subagent** (haiku, same-family). loop-kit ships this
+     so the loop runs with **zero external accounts**. Here **pass paths only** (don't paste the
+     deliverable/criteria into the body): "Read `~/.claude/tmp/criteria.md`, read the target
+     (`git diff` or `~/.claude/tmp/artifact.md`) yourself, and inspect it."
 
 ### Judge and loop control
-- The relevant L0 and the validator both pass -> stop the loop (don't schedule the next wakeup).
-  Go to the output phase.
+- The relevant L0 and the chosen checker (loop-verify or the validator) both pass -> stop the loop
+  (don't schedule the next wakeup). Go to the output phase.
 - A defect in either -> fix only the flagged defects and keep iterating.
 - 3-iteration cap. If unmet, present the best version + an explicit list of unresolved defects and
   stop (don't fake a pass).

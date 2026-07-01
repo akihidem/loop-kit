@@ -15,8 +15,8 @@ starting:
 1. Propose a "loop-ready prompt" rewrite of the task (3-5 frozen acceptance criteria + an L0
    deterministic check + validator inspection). Present it first.
 2. Then run that prompt with the built-in self-paced `/loop`. Each iteration: implement -> L0
-   check -> validator inspection -> fix only the flagged defects. Stop on validator PASS or at a
-   3-iteration cap.
+   check -> checker inspection (loop-verify if its `independent_verify` tool is available, else the
+   validator) -> fix only the flagged defects. Stop on the checker's PASS or at a 3-iteration cap.
 
 Do NOT apply this to trivial work — a one-line/typo fix, an investigation, or a question — (token
 waste). When in doubt, confirm in one line before applying.
