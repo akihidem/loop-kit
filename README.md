@@ -6,11 +6,12 @@
 
 > 📖 **New here?** There's an [illustrated, plain-language explainer (Japanese)](docs/explainer-ja/) — see the [preview image](docs/explainer-ja/preview.png).
 
-A **self-verifying build loop** for Claude Code. Freeze YES/NO acceptance criteria, then on each
-iteration: **implement → L0 deterministic gate (test/lint/typecheck) → adversarial validator
-(builder ≠ checker) → fix → repeat (bounded)**. The point isn't multi-agent magic — it's
-**grounding the loop in external verification** so quality stops depending on the model's own
-lenient self-grade.
+A **self-verifying build loop** for Claude Code. Freeze YES/NO acceptance criteria
+(sha256-pinned in a per-run dir), then on each iteration: **implement → L0 deterministic gate
+(test/lint/typecheck) → adversarial checker (builder ≠ checker, cross-vendor when available) →
+fix → repeat (bounded, honest stop)**. The point isn't multi-agent magic — it's **grounding the
+loop in external verification** so quality stops depending on the model's own lenient
+self-grade.
 
 ## Why
 
@@ -20,29 +21,35 @@ lenient self-grade.
   `node --test`, `pytest`, `tsc --noEmit`, `ruff`. That's **L0 — the fort**.
 - On top of L0, a **validator** subagent inspects adversarially (its job is finding defects, not
   approving), and **builder ≠ checker** so a single model's blind spots are less likely to pass.
-- Criteria are **frozen up front** (no loosening to force a pass), and iteration is **bounded**
-  (~3) so it doesn't spin.
+- Criteria are **frozen up front** (no loosening to force a pass) — written to a unique per-run
+  dir and **sha256-pinned**, so a tampered freeze is detectable — and iteration is **bounded**
+  (~3, with an early stop when it's spinning) so it doesn't churn.
+- Not everything deserves a loop: an **entry gate** skips trivial work, and if no deterministic
+  check exists (and none can be built), the honest answer is "a loop can't bite here".
 
 ## How it works
 
 ```
   /loopify <your request>
         |
+        |  entry gate: trivial work, or no buildable L0 -> don't loop
         v
-  +---------------------------------------------------------+
-  | Proposal: classify task, freeze 3-5 YES/NO criteria     |
-  +---------------------------------------------------------+
+  +----------------------------------------------------------------+
+  | Freeze: 3-5 YES/NO criteria -> unique run dir, sha256-pinned   |
+  +----------------------------------------------------------------+
         |
         v   each iteration (driven by the built-in /loop)
-  +-----------+   +----------------------+   +---------------------------+
-  | implement | > | L0 (deterministic):  | > | validator (adversarial):  |
-  |           |   | test / lint / typeck |   | haiku, finds defects      |
-  +-----------+   +----------+-----------+   +-------------+-------------+
-                       fail > next iter (skip validator)  |
-                                                          v
-                                         PASS both > stop & output
-                                         defect    > fix only that, iterate
-                                         3 iters   > best + open defects (no fake pass)
+  +------------+   +----------------------+   +----------------------------+
+  | implement  | > | L0 (deterministic):  | > | checker (adversarial):     |
+  | (single    |   | test / lint / typeck |   | loop-verify if available,  |
+  |  builder)  |   +----------+-----------+   | else validator (haiku)     |
+  +------------+        fail > next iter,     +-------------+--------------+
+                        raw output fed back                 |
+                        verbatim (checker skipped)          v
+                                    PASS both > stop & output
+                                    defect    > fix only that, iterate
+                                    spinning  > early stop (same defect 2x / empty diff)
+                                    3 iters   > best + open defects (no fake pass)
 ```
 
 Iteration is driven by Claude Code's **built-in `/loop`** (self-paced) and, optionally, **`/goal`**
@@ -75,13 +82,16 @@ claude plugin install loop-kit@akihidem
 
 ## Usage
 
-- **`/loopify <what you want>`** → get a loop-ready prompt (frozen criteria + L0 + validator
-  recipe). Hand it to `/loop`, or let Claude run it inline.
+- **`/loopify <what you want>`** → get a loop-ready prompt (frozen criteria + L0 + checker
+  recipe). It starts with an entry gate: trivial work or a target with no buildable L0 gets
+  "don't loop" instead of a recipe. Hand the prompt to `/loop`, or let Claude run it inline.
 - The **`loop-protocol`** skill auto-surfaces on YES/NO-decidable deliverable tasks and runs the
-  implement → L0 → validator → judge cycle.
-- The **checker** does the adversarial inspection against the frozen criteria (read from
-  `~/.claude/tmp/criteria.md`): **loop-verify** (cross-vendor) if available, else the bundled
-  **`validator`** agent (haiku).
+  freeze → implement → L0 → checker → judge cycle.
+- The **checker** does the adversarial inspection against the frozen criteria, read from the
+  per-run dir (`~/.claude/tmp/loop/<timestamp>-<slug>/criteria.md`, sha256-pinned):
+  **loop-verify** (cross-vendor) if available, else the bundled **`validator`** agent (haiku).
+  The completion gate uses the strongest independent checker available; the fast rung is for
+  in-loop iterations.
 - **`templates/goal-loop-template.md`** — for "build it to completion" jobs, anchor `/goal` to
   deterministic evidence (not a soft self-grade).
 
@@ -95,7 +105,7 @@ skill already triggers without it; the snippet just makes the proposal automatic
 | Component | Type | What it does |
 |---|---|---|
 | `loopify` | command | Convert a free-form request into a loop-ready prompt |
-| `loop-protocol` | skill | The implement → L0 → validator → judge procedure |
+| `loop-protocol` | skill | The freeze → implement → L0 → checker → judge procedure |
 | `validator` | agent (haiku) | Adversarial inspection against frozen criteria (same-family default) |
 | `goal-loop-template` | template | Anchor `/goal` to deterministic evidence |
 | `loop-verify` | external, optional | Cross-vendor independent checker — drop-in for `validator` ([separate repo](https://github.com/akihidem/loop-verify)) |
@@ -113,6 +123,25 @@ skill already triggers without it; the snippet just makes the proposal automatic
 - **For fact-checking, self-inspection is not the fort** — source grounding + human approval is.
 - **Don't blanket every task.** A one-line fix, an investigation, or a question doesn't need a loop
   (token waste). Iteration plateaus around 3.
+- **The loop guarantees the floor, not the ceiling.** L0 + checker can prove the frozen contract
+  holds; taste, judgment and "is this the right thing to build" stay with a human (or your
+  strongest model) at freeze time and at the final review.
+- **Irreversible actions stay outside.** Merge / production deploy / publishing / sending
+  externally are never part of the loop body — human gate.
+
+## Related work
+
+Designs that independently converge on the same shape (worth reading — loop-kit was built from
+the author's own measurements, then cross-checked against these):
+
+- [ralph-wiggum](https://github.com/anthropics/claude-code/blob/main/plugins/ralph-wiggum/README.md)
+  (Anthropic's official plugin) — raw persistence: re-feed a prompt until done, one task per
+  iteration. loop-kit adds the frozen contract and the external checker ladder.
+- [proof-loop](https://github.com/LeoStehlik/proof-loop) — frozen acceptance criteria, builder ≠
+  verifier in a fresh session, per-task evidence dir. The closest design; loop-kit adds the
+  L0-first cost order and the cross-vendor rung.
+- [aider](https://github.com/Aider-AI/aider)'s auto-test loop — feeds raw test output back and
+  keeps the best attempt after the retry cap: the same rich-feedback and honest-stop instincts.
 
 ## License
 
